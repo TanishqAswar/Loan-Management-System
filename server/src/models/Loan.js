@@ -69,9 +69,8 @@ const loanSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-loanSchema.pre('save', function (next) {
+loanSchema.pre('save', function () {
   this.updatedAt = new Date();
-  next();
 });
 
 module.exports = mongoose.model('Loan', loanSchema);
