@@ -66,7 +66,7 @@ npm install
 Ensure you have a `.env` file in the `client` directory with the following variable:
 
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=/api
 ```
 
 Start the Vite development server:
@@ -74,6 +74,23 @@ Start the Vite development server:
 ```bash
 npm run dev
 ```
+
+### 4. Database Seeding (Optional)
+
+To easily test all the roles without manually registering multiple accounts, you can run the seeding script from the `server` directory:
+
+```bash
+cd server
+npm run seed
+```
+
+This will create the following test accounts (Password for all is `password123`):
+- `borrower@example.com`
+- `sales_executive@example.com`
+- `sanction_officer@example.com`
+- `disbursement_executive@example.com`
+- `collection_officer@example.com`
+- `admin@example.com`
 
 ## Usage Flow
 
