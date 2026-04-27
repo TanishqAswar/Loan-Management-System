@@ -6,10 +6,12 @@ const path = require('path');
 
 const authRoutes = require('./src/routes/authRoutes');
 const loanRoutes = require('./src/routes/loanRoutes');
+const logger = require('./src/middleware/logger');
 
 const app = express();
 
 // Middleware
+app.use(logger);
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
