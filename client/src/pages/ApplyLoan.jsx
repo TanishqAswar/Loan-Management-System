@@ -35,6 +35,11 @@ export default function ApplyLoan() {
 
   const handleStep1 = async (e) => {
     e.preventDefault();
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!panRegex.test(personal.pan)) {
+      setError('Invalid PAN format. Must be 5 letters, 4 numbers, 1 letter (e.g. ABCDE1234F)');
+      return;
+    }
     setError(''); setLoading(true);
     try {
       const { data } = await api.post('/loans/step1', personal);

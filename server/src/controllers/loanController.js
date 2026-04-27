@@ -5,8 +5,9 @@ const runBRE = (loan) => {
   const { monthlySalary, pan, employmentMode } = loan.personalDetails;
   const { amount, tenure } = loan.loanDetails;
 
-  if (!pan || pan.length !== 10) {
-    return { passed: false, reason: 'Invalid PAN number' };
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  if (!pan || !panRegex.test(pan.toUpperCase())) {
+    return { passed: false, reason: 'Invalid PAN number format' };
   }
   if (monthlySalary < 15000) {
     return { passed: false, reason: 'Monthly salary below minimum threshold of ₹15,000' };
@@ -41,9 +42,15 @@ const calculateLoanDetails = (amount, tenure, rate = 12) => {
 exports.submitPersonalDetails = async (req, res) => {
   try {
     const { fullName, pan, dateOfBirth, monthlySalary, employmentMode } = req.body;
+
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!pan || !panRegex.test(pan.toUpperCase())) {
+      return res.status(400).json({ success: false, message: 'Invalid PAN format. Must be 5 letters, 4 numbers, 1 letter (e.g. ABCDE1234F)' });
+    }
+
     const loan = await Loan.create({
       borrower: req.user._id,
-      personalDetails: { fullName, pan, dateOfBirth, monthlySalary, employmentMode },
+      personalDetails: { fullName, pan: pan.toUpperCase(), dateOfBirth, monthlySalary, employmentMode },
       status: 'APPLIED'
     });
 
