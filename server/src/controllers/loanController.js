@@ -126,10 +126,10 @@ exports.getLoans = async (req, res) => {
     if (role === 'borrower') {
       query.borrower = _id;
     } else if (role === 'sales_executive') {
-      query.status = { $in: ['APPLIED'] };
-      query.breRejected = false;
+      // Sales sees leads in a different endpoint, not loans
+      query._id = null; // Return empty
     } else if (role === 'sanction_officer') {
-      query.status = { $in: ['APPROVED', 'SANCTIONED'] };
+      query.status = { $in: ['APPLIED', 'APPROVED', 'SANCTIONED'] };
     } else if (role === 'disbursement_executive') {
       query.status = { $in: ['SANCTIONED', 'DISBURSED'] };
     } else if (role === 'collection_officer') {

@@ -127,7 +127,7 @@ export default function LoanDetail() {
       <div className="card">
         <div className="section-title">Actions</div>
 
-        {user.role === 'sales_executive' && loan.status === 'APPLIED' && (
+        {user.role === 'sanction_officer' && loan.status === 'APPLIED' && (
           <div className="flex gap-2">
             <button className="btn btn-success" disabled={acting} onClick={() => act('review', 'patch', { action: 'approve' })}>
               <CheckCircle size={15} /> Approve

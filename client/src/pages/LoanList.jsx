@@ -7,8 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { Search } from 'lucide-react';
 
 const ROLE_TITLES = {
-  sales_executive: { title: 'Loan Applications', sub: 'Review and approve/reject applied loans' },
-  sanction_officer: { title: 'Sanction Queue', sub: 'Generate agreements for approved loans' },
+  sales_executive: { title: 'Leads Pipeline', sub: 'Track users who have registered but not yet applied' },
+  sanction_officer: { title: 'Sanction Queue', sub: 'Review applied loans and generate agreements' },
   disbursement_executive: { title: 'Disbursement Queue', sub: 'Disburse sanctioned loans' },
   collection_officer: { title: 'Collections', sub: 'Record repayments for active loans' },
   admin: { title: 'All Loans', sub: 'Full system view' },
@@ -24,15 +24,22 @@ export default function LoanList() {
   const info = ROLE_TITLES[user?.role] || { title: 'Loans', sub: '' };
 
   useEffect(() => {
-    api.get('/loans').then(r => setLoans(r.data.loans)).catch(() => {}).finally(() => setLoading(false));
-  }, []);
+    const endpoint = user?.role === 'sales_executive' ? '/auth/leads' : '/loans';
+    api.get(endpoint)
+      .then(r => setLoans(r.data.loans || r.data.leads))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [user?.role]);
 
-  const filtered = loans.filter(l => {
+  const filtered = loans.filter(item => {
     const q = search.toLowerCase();
+    if (user?.role === 'sales_executive') {
+      return item._id.toLowerCase().includes(q) || item.name.toLowerCase().includes(q) || item.email.toLowerCase().includes(q);
+    }
     return (
-      l._id.toLowerCase().includes(q) ||
-      l.borrower?.name?.toLowerCase().includes(q) ||
-      l.status.toLowerCase().includes(q)
+      item._id.toLowerCase().includes(q) ||
+      item.borrower?.name?.toLowerCase().includes(q) ||
+      item.status.toLowerCase().includes(q)
     );
   });
 
@@ -49,7 +56,32 @@ export default function LoanList() {
 
       <div className="card">
         {loading ? <p className="text-muted">Loading...</p> : filtered.length === 0 ? (
-          <div className="empty-state"><div className="icon">📋</div><p>No loans found.</p></div>
+          <div className="empty-state"><div className="icon">📋</div><p>No records found.</p></div>
+        ) : user?.role === 'sales_executive' ? (
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Registered Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(u => (
+                  <tr key={u._id}>
+                    <td style={{ fontFamily: 'monospace', color: 'var(--primary-light)' }}>#{u._id.slice(-8).toUpperCase()}</td>
+                    <td>{u.name}</td>
+                    <td>{u.email}</td>
+                    <td>{fmtDate(u.createdAt)}</td>
+                    <td><span className="badge badge-yellow">No Application Yet</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="table-wrap">
             <table>

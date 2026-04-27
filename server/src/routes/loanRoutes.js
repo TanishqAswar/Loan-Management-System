@@ -26,7 +26,7 @@ router.get('/admin/stats', protect, authorize('admin'), getAdminStats);
 router.get('/:id', protect, getLoan);
 
 // Role-specific actions
-router.patch('/:id/review', protect, authorize('sales_executive', 'admin'), reviewLoan);
+router.patch('/:id/review', protect, authorize('sanction_officer', 'admin'), reviewLoan);
 router.patch('/:id/sanction', protect, authorize('sanction_officer', 'admin'), sanctionLoan);
 router.patch('/:id/disburse', protect, authorize('disbursement_executive', 'admin'), disburseLoan);
 router.post('/:id/payment', protect, authorize('collection_officer', 'admin'), recordPayment);

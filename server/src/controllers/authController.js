@@ -63,3 +63,24 @@ exports.login = async (req, res) => {
 exports.getMe = async (req, res) => {
   res.json({ success: true, user: req.user });
 };
+
+// @desc   Get leads (users who haven't applied for a loan)
+// @route  GET /api/auth/leads
+// @access Sales Executive
+exports.getLeads = async (req, res) => {
+  try {
+    const Loan = require('../models/Loan');
+    // All borrowers
+    const borrowers = await User.find({ role: 'borrower' }).select('-password');
+    // Loans that exist
+    const loans = await Loan.find({ borrower: { $in: borrowers.map(b => b._id) } }).select('borrower');
+    const borrowersWithLoans = loans.map(l => l.borrower.toString());
+    
+    // Filter
+    const leads = borrowers.filter(b => !borrowersWithLoans.includes(b._id.toString()));
+    
+    res.json({ success: true, count: leads.length, leads });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
