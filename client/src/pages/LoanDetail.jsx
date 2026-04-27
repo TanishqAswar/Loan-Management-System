@@ -80,12 +80,14 @@ export default function LoanDetail() {
                   ['Interest Rate', `${loan.loanDetails.interestRate}% p.a.`],
                   ['Interest', fmt(loan.loanDetails.interest)],
                   ['Total Repayable', fmt(loan.loanDetails.totalRepayable)],
-                  ['Outstanding', fmt(loan.outstandingBalance || 0)],
                 ].map(([k, v]) => (
                   <div key={k} className="detail-item"><label>{k}</label><span>{v}</span></div>
                 ))}
+                {['borrower', 'collection_officer', 'admin'].includes(user?.role) && (
+                  <div className="detail-item"><label>Outstanding</label><span>{loan.outstandingBalance != null ? fmt(loan.outstandingBalance) : '—'}</span></div>
+                )}
               </div>
-              {loan.status === 'DISBURSED' && (
+              {loan.status === 'DISBURSED' && ['borrower', 'collection_officer', 'admin'].includes(user?.role) && (
                 <div style={{ marginTop: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: 4 }}>
                     <span className="text-muted">Repayment Progress</span>
@@ -100,7 +102,7 @@ export default function LoanDetail() {
       </div>
 
       {/* Document */}
-      {loan.documentUrl && (
+      {loan.documentUrl && ['borrower', 'sanction_officer', 'admin'].includes(user?.role) && (
         <div className="card mb-4" style={{ marginBottom: 20 }}>
           <div className="section-title">Supporting Document</div>
           <a href={`http://localhost:5000${loan.documentUrl}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">

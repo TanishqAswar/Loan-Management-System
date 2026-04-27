@@ -277,8 +277,7 @@ exports.recordPayment = async (req, res) => {
     loan.payments.push({ utrNumber, amount, date, recordedBy: req.user._id });
     loan.outstandingBalance = Math.round((loan.outstandingBalance - amount) * 100) / 100;
 
-    // Handle fractional dust (< 1 Rupee) that gets hidden by UI formatting
-    if (loan.outstandingBalance < 1) {
+    if (loan.outstandingBalance <= 0) {
       loan.status = 'CLOSED';
       loan.outstandingBalance = 0;
     }

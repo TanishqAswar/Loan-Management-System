@@ -93,7 +93,7 @@ export default function LoanList() {
                   <th>Tenure</th>
                   <th>Status</th>
                   <th>Applied</th>
-                  <th>Outstanding</th>
+                  {['borrower', 'collection_officer', 'admin'].includes(user?.role) && <th>Outstanding</th>}
                 </tr>
               </thead>
               <tbody>
@@ -105,7 +105,7 @@ export default function LoanList() {
                     <td>{l.loanDetails?.tenure ? `${l.loanDetails.tenure}d` : '—'}</td>
                     <td><span className={STATUS_BADGE[l.status]}>{l.status}</span></td>
                     <td>{fmtDate(l.createdAt)}</td>
-                    <td>{l.outstandingBalance ? fmt(l.outstandingBalance) : '—'}</td>
+                    {['borrower', 'collection_officer', 'admin'].includes(user?.role) && <td>{l.outstandingBalance != null ? fmt(l.outstandingBalance) : '—'}</td>}
                   </tr>
                 ))}
               </tbody>
