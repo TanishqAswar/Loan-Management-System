@@ -5,15 +5,24 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
+    try {
     const stored = localStorage.getItem('lms_user');
-    return stored ? JSON.parse(stored) : null;
-  });
+
+    if (!stored || stored === "undefined") return null;
+
+    return JSON.parse(stored);
+  } catch (err) {
+    console.error("Invalid JSON in localStorage:", err);
+    localStorage.removeItem('lms_user');
+    return null;
+  }
+});
   const [loading, setLoading] = useState(false);
 
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
     localStorage.setItem('lms_token', data.token);
-    localStorage.setItem('lms_user', JSON.stringify(data.user));
+    localStorage.setItem('lms_user', JSON.stringify(data.user || null));
     setUser(data.user);
     return data.user;
   };
