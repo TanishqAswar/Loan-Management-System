@@ -22,22 +22,25 @@ if (missingEnv.length > 0) {
   process.exit(1);
 }
 
-const allowedOrigins = process.env.CLIENT_URLS.split(',').map(o => o.trim()).filter(Boolean);
-console.log('✅ Allowed Origins:', allowedOrigins);
-
+const allowedOrigins = [
+  "https://loan-management-system-1-7364.onrender.com",
+  "http://localhost:5173",
+  "http://localhost:5174"
+];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like Postman)
+    // Allow requests with no origin (Postman, curl)
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
       console.error(`❌ CORS blocked origin: ${origin}`);
-      return callback(new Error(`CORS: Origin "${origin}" is not allowed`));
+      return callback(new Error("Not allowed by CORS"));
     }
-  }
+  },
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
