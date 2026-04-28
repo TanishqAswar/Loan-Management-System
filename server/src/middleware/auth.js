@@ -19,6 +19,7 @@ const protect = async (req, res, next) => {
     }
     next();
   } catch (err) {
+    console.error('[protect] Token verification failed:', err.message);
     return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
   }
 };

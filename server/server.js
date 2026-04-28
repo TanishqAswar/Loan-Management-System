@@ -14,7 +14,17 @@ const app = express();
 // Middleware
 app.use(morgan('dev'));
 
-const allowedOrigins = process.env.CLIENT_URLS.split(",");
+// Guard: crash early if required env vars are missing
+const REQUIRED_ENV = ['MONGO_URI', 'JWT_SECRET', 'CLIENT_URLS'];
+const missingEnv = REQUIRED_ENV.filter((key) => !process.env[key]);
+if (missingEnv.length > 0) {
+  console.error(`❌ Missing required environment variables: ${missingEnv.join(', ')}`);
+  process.exit(1);
+}
+
+const allowedOrigins = process.env.CLIENT_URLS.split(',').map(o => o.trim()).filter(Boolean);
+console.log('✅ Allowed Origins:', allowedOrigins);
+
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -24,7 +34,8 @@ app.use(cors({
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
-      return callback(new Error("Not allowed by CORS"));
+      console.error(`❌ CORS blocked origin: ${origin}`);
+      return callback(new Error(`CORS: Origin "${origin}" is not allowed`));
     }
   }
 }));
@@ -60,9 +71,19 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ success: false, message: err.message || 'Internal server error' });
+  const status = err.status || err.statusCode || 500;
+  console.error(`❌ [${req.method}] ${req.originalUrl} → ${status}`);
+  console.error(`   Message : ${err.message}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(`   Stack   : ${err.stack}`);
+  }
+  res.status(status).json({
+    success: false,
+    message: err.message || 'Internal server error',
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
+  });
 });
+
 
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;

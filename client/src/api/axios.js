@@ -13,6 +13,17 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    const method  = err.config?.method?.toUpperCase() ?? 'REQ';
+    const url     = err.config?.url ?? 'unknown';
+    const status  = err.response?.status ?? 'NO_RESPONSE';
+    const message = err.response?.data?.message ?? err.message;
+
+    console.error(
+      `❌ [API] ${method} ${url} → ${status}:`,
+      message,
+      err.response?.data ?? '',
+    );
+
     if (err.response?.status === 401) {
       localStorage.removeItem('lms_token');
       localStorage.removeItem('lms_user');

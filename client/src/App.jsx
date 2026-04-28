@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import BorrowerDashboard from './pages/BorrowerDashboard';
@@ -28,39 +29,41 @@ function RoleHome() {
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<RoleHome />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<RoleHome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          <Route path="/dashboard" element={
-            <PrivateRoute roles={['borrower']}><BorrowerDashboard /></PrivateRoute>
-          } />
-          <Route path="/apply" element={
-            <PrivateRoute roles={['borrower']}><ApplyLoan /></PrivateRoute>
-          } />
-          <Route path="/my-loans" element={
-            <PrivateRoute roles={['borrower']}><LoanList /></PrivateRoute>
-          } />
+            <Route path="/dashboard" element={
+              <PrivateRoute roles={['borrower']}><BorrowerDashboard /></PrivateRoute>
+            } />
+            <Route path="/apply" element={
+              <PrivateRoute roles={['borrower']}><ApplyLoan /></PrivateRoute>
+            } />
+            <Route path="/my-loans" element={
+              <PrivateRoute roles={['borrower']}><LoanList /></PrivateRoute>
+            } />
 
-          <Route path="/loans" element={
-            <PrivateRoute><LoanList /></PrivateRoute>
-          } />
-          <Route path="/loans/:id" element={
-            <PrivateRoute><LoanDetail /></PrivateRoute>
-          } />
+            <Route path="/loans" element={
+              <PrivateRoute><LoanList /></PrivateRoute>
+            } />
+            <Route path="/loans/:id" element={
+              <PrivateRoute><LoanDetail /></PrivateRoute>
+            } />
 
-          <Route path="/admin" element={
-            <PrivateRoute roles={['admin']}><AdminStats /></PrivateRoute>
-          } />
+            <Route path="/admin" element={
+              <PrivateRoute roles={['admin']}><AdminStats /></PrivateRoute>
+            } />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-      <ToastContainer position="top-right" theme="dark" autoClose={3000} />
-    </AuthProvider>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+        <ToastContainer position="top-right" theme="dark" autoClose={3000} />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

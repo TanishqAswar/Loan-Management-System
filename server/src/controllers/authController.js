@@ -27,11 +27,11 @@ exports.register = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
   } catch (err) {
+    console.error('[register] Error:', err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// @desc   Login user
 // @route  POST /api/auth/login
 // @access Public
 exports.login = async (req, res) => {
@@ -53,11 +53,11 @@ exports.login = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
   } catch (err) {
+    console.error('[login] Error:', err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// @desc   Get current user
 // @route  GET /api/auth/me
 // @access Private
 exports.getMe = async (req, res) => {
@@ -81,6 +81,8 @@ exports.getLeads = async (req, res) => {
     
     res.json({ success: true, count: leads.length, leads });
   } catch (err) {
+    console.error('[getLeads] Error:', err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
+

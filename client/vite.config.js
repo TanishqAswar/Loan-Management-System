@@ -37,6 +37,9 @@ function proxyLogger() {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), proxyLogger()],
+  build: {
+    outDir: 'build',
+  },
   server: {
     proxy: {
       '/api': {
