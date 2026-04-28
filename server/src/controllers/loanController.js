@@ -35,6 +35,7 @@ const runBRE = (loan) => {
     return { passed: false, reason: 'Loan amount exceeds 10x monthly salary' };
   }
   
+  // documentUrl is stored as a relative path (e.g. "uploads/filename.pdf")
   if (!loan.documentUrl) {
     return { passed: false, reason: 'Supporting document is required' };
   }
@@ -75,8 +76,9 @@ exports.submitPersonalDetails = async (req, res) => {
 
     for (const draft of incompleteLoans) {
       if (draft.documentUrl) {
+        // documentUrl is stored as a relative path like "uploads/filename.pdf"
         const filePath = path.join(__dirname, '../../', draft.documentUrl);
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch (_) {}
       }
       await draft.deleteOne();
     }
@@ -105,13 +107,14 @@ exports.uploadDocument = async (req, res) => {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-    // 🔥 IMPORTANT CHANGE
-    const baseUrl = process.env.BASE_URL;
-    console.log("BASE_URL:", process.env.BASE_URL);
-    const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
-
-    loan.documentUrl = fileUrl;
+    // Store ONLY the relative path so cleanup jobs can resolve the actual file.
+    // The full public URL is constructed on demand in the response.
+    const relativePath = `uploads/${req.file.filename}`;
+    loan.documentUrl = relativePath;
     await loan.save();
+
+    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+    const fileUrl = `${baseUrl}/${relativePath}`;
 
     res.json({
       success: true,

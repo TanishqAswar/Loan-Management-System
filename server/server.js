@@ -115,8 +115,9 @@ mongoose
         
         for (const loan of incompleteLoans) {
           if (loan.documentUrl) {
+            // documentUrl is stored as a relative path: "uploads/filename.pdf"
             const filePath = path.join(__dirname, loan.documentUrl);
-            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+            try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch (_) {}
           }
           await loan.deleteOne();
         }

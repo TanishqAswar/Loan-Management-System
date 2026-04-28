@@ -18,6 +18,15 @@ export default function LoanDetail() {
   const [payment, setPayment] = useState({ utrNumber: '', amount: '', date: '' });
   const [acting, setActing] = useState(false);
 
+  // documentUrl in DB is stored as a relative path ("uploads/filename.pdf").
+  // Construct the full URL for viewing. Handle legacy loans that stored a full URL.
+  const getDocUrl = (rawUrl) => {
+    if (!rawUrl) return null;
+    if (rawUrl.startsWith('http')) return rawUrl; // legacy full URL
+    const base = import.meta.env.VITE_BASE_URL || '';
+    return `${base}/${rawUrl}`;
+  };
+
   const load = () => {
     api.get(`/loans/${id}`).then(r => setLoan(r.data.loan)).catch(() => toast.error('Failed to load')).finally(() => setLoading(false));
   };
@@ -102,11 +111,10 @@ export default function LoanDetail() {
       </div>
 
       {/* Document */}
-      {loan.documentUrl && ['borrower', 'sanction_officer', 'admin'].includes(user?.role) && (
+      {loan.documentUrl && ['borrower', 'sanction_officer', 'sales_executive', 'admin'].includes(user?.role) && (
         <div className="card mb-4" style={{ marginBottom: 20 }}>
           <div className="section-title">Supporting Document</div>
-
-          <a href={`${loan.documentUrl}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
+          <a href={getDocUrl(loan.documentUrl)} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
             📎 View Document
           </a>
         </div>
