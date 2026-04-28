@@ -16,7 +16,7 @@ export default function ApplyLoan() {
 
   // Step 1
   const [personal, setPersonal] = useState({
-    fullName: '', pan: '', dateOfBirth: '', monthlySalary: '', employmentMode: 'salaried'
+    fullName: '', pan: '', dateOfBirth: '2000-01-01', monthlySalary: '', employmentMode: 'salaried'
   });
 
   // Step 2
@@ -40,6 +40,29 @@ export default function ApplyLoan() {
       setError('Invalid PAN format. Must be 5 letters, 4 numbers, 1 letter (e.g. ABCDE1234F)');
       return;
     }
+    if (personal.employmentMode === 'unemployed') {
+      setError('Unemployed applicants are not eligible');
+      return;
+    }
+    if (Number(personal.monthlySalary) < 25000) {
+      setError('Monthly salary below minimum threshold of ₹25,000');
+      return;
+    }
+
+    if (personal.dateOfBirth) {
+      const birthDate = new Date(personal.dateOfBirth);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      if (age < 23 || age > 50) {
+        setError('Age must be between 23 and 50 years');
+        return;
+      }
+    }
+
     setError(''); setLoading(true);
     try {
       const { data } = await api.post('/loans/step1', personal);
@@ -119,6 +142,7 @@ export default function ApplyLoan() {
               <div className="form-group">
                 <label className="form-label">Date of Birth</label>
                 <input type="date" className="form-input" value={personal.dateOfBirth}
+                  min="1976-01-01" max="2003-12-31"
                   onChange={e => setPersonal({ ...personal, dateOfBirth: e.target.value })} required />
               </div>
               <div className="form-group">

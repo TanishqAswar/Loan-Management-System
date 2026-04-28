@@ -2,22 +2,39 @@ const Loan = require('../models/Loan');
 
 // BRE: Business Rule Engine
 const runBRE = (loan) => {
-  const { monthlySalary, pan, employmentMode } = loan.personalDetails;
+  const { monthlySalary, pan, employmentMode, dateOfBirth } = loan.personalDetails;
   const { amount, tenure } = loan.loanDetails;
 
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
   if (!pan || !panRegex.test(pan.toUpperCase())) {
     return { passed: false, reason: 'Invalid PAN number format' };
   }
-  if (monthlySalary < 15000) {
-    return { passed: false, reason: 'Monthly salary below minimum threshold of ₹15,000' };
-  }
-  if (amount > monthlySalary * 10) {
-    return { passed: false, reason: 'Loan amount exceeds 10x monthly salary' };
-  }
+  
   if (employmentMode === 'unemployed') {
     return { passed: false, reason: 'Unemployed applicants are not eligible' };
   }
+
+  if (monthlySalary < 25000) {
+    return { passed: false, reason: 'Monthly salary below minimum threshold of ₹25,000' };
+  }
+
+  if (dateOfBirth) {
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    if (age < 23 || age > 50) {
+      return { passed: false, reason: 'Age must be between 23 and 50 years' };
+    }
+  }
+
+  if (amount > monthlySalary * 10) {
+    return { passed: false, reason: 'Loan amount exceeds 10x monthly salary' };
+  }
+  
   if (!loan.documentUrl) {
     return { passed: false, reason: 'Supporting document is required' };
   }

@@ -1,0 +1,82 @@
+◇ injected env (3) from .env // tip: ⌘ override existing { override: true }
+✅ MongoDB connected
+[
+  {
+    path: '/api/auth/register',
+    methods: [ 'POST' ],
+    middlewares: [ 'anonymous' ]
+  },
+  {
+    path: '/api/auth/login',
+    methods: [ 'POST' ],
+    middlewares: [ 'anonymous' ]
+  },
+  {
+    path: '/api/auth/me',
+    methods: [ 'GET' ],
+    middlewares: [ 'protect', 'anonymous' ]
+  },
+  {
+    path: '/api/auth/leads',
+    methods: [ 'GET' ],
+    middlewares: [ 'protect', 'anonymous', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/step1',
+    methods: [ 'POST' ],
+    middlewares: [ 'protect', 'anonymous', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/:id/upload',
+    methods: [ 'POST' ],
+    middlewares: [ 'protect', 'anonymous', 'multerMiddleware', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/:id/configure',
+    methods: [ 'POST' ],
+    middlewares: [ 'protect', 'anonymous', 'anonymous' ]
+  },
+  {
+    path: '/api/loans',
+    methods: [ 'GET' ],
+    middlewares: [ 'protect', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/admin/stats',
+    methods: [ 'GET' ],
+    middlewares: [ 'protect', 'anonymous', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/:id',
+    methods: [ 'GET' ],
+    middlewares: [ 'protect', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/:id/review',
+    methods: [ 'PATCH' ],
+    middlewares: [ 'protect', 'anonymous', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/:id/sanction',
+    methods: [ 'PATCH' ],
+    middlewares: [ 'protect', 'anonymous', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/:id/disburse',
+    methods: [ 'PATCH' ],
+    middlewares: [ 'protect', 'anonymous', 'anonymous' ]
+  },
+  {
+    path: '/api/loans/:id/payment',
+    methods: [ 'POST' ],
+    middlewares: [ 'protect', 'anonymous', 'anonymous' ]
+  },
+  {
+    path: '/api/health',
+    methods: [ 'GET' ],
+    middlewares: [ 'anonymous' ]
+  },
+  { path: '/', methods: [ 'GET' ], middlewares: [ 'anonymous' ] }
+]
+🚀 LMS Server running on http://localhost:5005
+[0mPOST /api/auth/login [33m401[0m 36.652 ms - 49[0m

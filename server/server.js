@@ -3,15 +3,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const morgan = require('morgan');
+const expressListEndpoints = require("express-list-endpoints");
 
 const authRoutes = require('./src/routes/authRoutes');
 const loanRoutes = require('./src/routes/loanRoutes');
-const logger = require('./src/middleware/logger');
 
 const app = express();
 
 // Middleware
-app.use(logger);
+app.use(morgan('dev'));
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +27,16 @@ app.use('/api/loans', loanRoutes);
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'LMS Server is running', timestamp: new Date() });
+});
+
+// Basic Route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Loan Management System API is running',
+    status: 'OK',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // 404 handler
@@ -48,6 +59,8 @@ mongoose
     app.listen(PORT, () => {
       console.log(`🚀 LMS Server running on http://localhost:${PORT}`);
     });
+    const endpoints = expressListEndpoints(app);
+    console.log(endpoints);
   })
   .catch((err) => {
     console.error('❌ MongoDB connection failed:', err.message);
