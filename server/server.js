@@ -13,7 +13,21 @@ const app = express();
 
 // Middleware
 app.use(morgan('dev'));
-app.use(cors({ origin: '*' }));
+
+const allowedOrigins = process.env.CLIENT_URLS.split(",");
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like Postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
