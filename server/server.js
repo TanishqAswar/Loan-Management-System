@@ -56,11 +56,42 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected');
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`🚀 LMS Server running on http://localhost:${PORT}`);
     });
+    // Fix for Vite proxy ECONNRESET and ECONNREFUSED race conditions
+    server.keepAliveTimeout = 120000; 
+    server.headersTimeout = 120000;
+
     const endpoints = expressListEndpoints(app);
     console.log(endpoints);
+
+    // Background job: Clean up incomplete loans (older than 24h) and their files
+    setInterval(async () => {
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const incompleteLoans = await mongoose.model('Loan').find({
+          'loanDetails.amount': { $exists: false },
+          createdAt: { $lt: twentyFourHoursAgo }
+        });
+        
+        for (const loan of incompleteLoans) {
+          if (loan.documentUrl) {
+            const filePath = path.join(__dirname, loan.documentUrl);
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+          }
+          await loan.deleteOne();
+        }
+        if (incompleteLoans.length > 0) {
+          console.log(`🧹 Cleaned up ${incompleteLoans.length} incomplete draft loans`);
+        }
+      } catch (err) {
+        console.error('Cleanup job error:', err);
+      }
+    }, 60 * 60 * 1000); // Runs every 1 hour
+
   })
   .catch((err) => {
     console.error('❌ MongoDB connection failed:', err.message);

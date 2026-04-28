@@ -32,14 +32,19 @@ export default function LoanList() {
   }, [user?.role]);
 
   const filtered = loans.filter(item => {
+    // Hide incomplete drafts from the UI
+    if (!item.loanDetails?.amount) return false;
+
     const q = search.toLowerCase();
     if (user?.role === 'sales_executive') {
-      return item._id.toLowerCase().includes(q) || item.name.toLowerCase().includes(q) || item.email.toLowerCase().includes(q);
+      return item._id?.toLowerCase().includes(q) || 
+             item.name?.toLowerCase().includes(q) || 
+             item.email?.toLowerCase().includes(q);
     }
     return (
-      item._id.toLowerCase().includes(q) ||
+      item._id?.toLowerCase().includes(q) ||
       item.borrower?.name?.toLowerCase().includes(q) ||
-      item.status.toLowerCase().includes(q)
+      item.status?.toLowerCase().includes(q)
     );
   });
 
@@ -105,7 +110,7 @@ export default function LoanList() {
                     <td>{l.loanDetails?.tenure ? `${l.loanDetails.tenure}d` : '—'}</td>
                     <td><span className={STATUS_BADGE[l.status]}>{l.status}</span></td>
                     <td>{fmtDate(l.createdAt)}</td>
-                    {['borrower', 'collection_officer', 'admin'].includes(user?.role) && <td>{l.outstandingBalance != null ? fmt(l.outstandingBalance) : '—'}</td>}
+                    {['borrower', 'collection_officer', 'admin'].includes(user?.role) && <td>{['DISBURSED', 'CLOSED'].includes(l.status) ? fmt(l.outstandingBalance) : '—'}</td>}
                   </tr>
                 ))}
               </tbody>

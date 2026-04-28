@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Upload, Calculator } from 'lucide-react';
 
 const STEPS = ['Personal Details', 'Upload Document', 'Loan Configuration'];
 
 export default function ApplyLoan() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loanId, setLoanId] = useState(null);
@@ -16,7 +18,7 @@ export default function ApplyLoan() {
 
   // Step 1
   const [personal, setPersonal] = useState({
-    fullName: '', pan: '', dateOfBirth: '2000-01-01', monthlySalary: '', employmentMode: 'salaried'
+    fullName: user?.name || '', pan: '', dateOfBirth: '2000-01-01', monthlySalary: '', employmentMode: 'salaried'
   });
 
   // Step 2
@@ -132,7 +134,8 @@ export default function ApplyLoan() {
               <div className="form-group">
                 <label className="form-label">Full Name</label>
                 <input className="form-input" value={personal.fullName}
-                  onChange={e => setPersonal({ ...personal, fullName: e.target.value })} required />
+                  style={{ backgroundColor: 'var(--bg-lighter)', cursor: 'not-allowed', color: 'var(--text-muted)' }}
+                  readOnly title="Name is securely pulled from your verified account profile" />
               </div>
               <div className="form-group">
                 <label className="form-label">PAN Number</label>

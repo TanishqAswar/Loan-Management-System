@@ -83,8 +83,8 @@ export default function LoanDetail() {
                 ].map(([k, v]) => (
                   <div key={k} className="detail-item"><label>{k}</label><span>{v}</span></div>
                 ))}
-                {['borrower', 'collection_officer', 'admin'].includes(user?.role) && (
-                  <div className="detail-item"><label>Outstanding</label><span>{loan.outstandingBalance != null ? fmt(loan.outstandingBalance) : '—'}</span></div>
+                {['borrower', 'collection_officer', 'admin'].includes(user?.role) && ['DISBURSED', 'CLOSED'].includes(loan.status) && (
+                  <div className="detail-item"><label>Outstanding</label><span>{fmt(loan.outstandingBalance)}</span></div>
                 )}
               </div>
               {loan.status === 'DISBURSED' && ['borrower', 'collection_officer', 'admin'].includes(user?.role) && (
@@ -128,7 +128,7 @@ export default function LoanDetail() {
       {/* Role Actions */}
       <div className="card">
         <div className="section-title">Actions</div>
-
+        
         {user.role === 'sanction_officer' && loan.status === 'APPLIED' && (
           <div className="flex gap-2">
             <button className="btn btn-success" disabled={acting} onClick={() => act('review', 'patch', { action: 'approve' })}>
@@ -165,6 +165,27 @@ export default function LoanDetail() {
           </button>
         )}
 
+        {/* Borrower specific professional action guidance */}
+        {user.role === 'borrower' && (
+          <div className="borrower-status-action" style={{ padding: '12px 16px', background: 'var(--bg-lighter)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+            {['APPLIED', 'APPROVED'].includes(loan.status) && (
+              <p className="mb-0" style={{ color: 'var(--text-muted)', fontWeight: 500 }}>⏳ Wait for Decision of Sanction Officer</p>
+            )}
+            {loan.status === 'REJECTED' && (
+              <p className="mb-0" style={{ color: 'var(--danger)', fontWeight: 500 }}>❌ Please reapply with rectifying the reasons of rejection</p>
+            )}
+            {loan.status === 'SANCTIONED' && (
+              <p className="mb-0" style={{ color: 'var(--text-muted)', fontWeight: 500 }}>🏦 Wait for Disbursement</p>
+            )}
+            {loan.status === 'DISBURSED' && (
+              <p className="mb-0" style={{ color: 'var(--primary-light)', fontWeight: 500 }}>💳 Pay the outstanding</p>
+            )}
+            {loan.status === 'CLOSED' && (
+              <p className="mb-0" style={{ color: 'var(--success)', fontWeight: 500 }}>✅ No Action needed</p>
+            )}
+          </div>
+        )}
+
         {/* Admin can do everything */}
         {user.role === 'admin' && (
           <div className="flex gap-2" style={{ flexWrap: 'wrap' }}>
@@ -178,7 +199,7 @@ export default function LoanDetail() {
           </div>
         )}
 
-        {['REJECTED', 'CLOSED'].includes(loan.status) && <p className="text-muted">No actions available for this loan.</p>}
+        {user.role !== 'borrower' && ['REJECTED', 'CLOSED'].includes(loan.status) && <p className="text-muted">No actions available for this loan.</p>}
       </div>
 
       {/* Payments history */}

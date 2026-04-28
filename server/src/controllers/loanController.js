@@ -65,6 +65,22 @@ exports.submitPersonalDetails = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid PAN format. Must be 5 letters, 4 numbers, 1 letter (e.g. ABCDE1234F)' });
     }
 
+    // Instantly delete any previous incomplete drafts for this user to save DB and disk space
+    const fs = require('fs');
+    const path = require('path');
+    const incompleteLoans = await Loan.find({ 
+      borrower: req.user._id, 
+      'loanDetails.amount': { $exists: false } 
+    });
+
+    for (const draft of incompleteLoans) {
+      if (draft.documentUrl) {
+        const filePath = path.join(__dirname, '../../', draft.documentUrl);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      }
+      await draft.deleteOne();
+    }
+
     const loan = await Loan.create({
       borrower: req.user._id,
       personalDetails: { fullName, pan: pan.toUpperCase(), dateOfBirth, monthlySalary, employmentMode },

@@ -16,10 +16,13 @@ export default function BorrowerDashboard() {
     api.get('/loans').then(r => setLoans(r.data.loans)).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  const total = loans.length;
-  const active = loans.filter(l => ['DISBURSED', 'SANCTIONED', 'APPLIED', 'APPROVED'].includes(l.status)).length;
-  const closed = loans.filter(l => l.status === 'CLOSED').length;
-  const totalBorrowed = loans.filter(l => l.loanDetails?.amount).reduce((a, l) => a + (l.loanDetails?.amount || 0), 0);
+  const filteredLoans = loans.filter(l => l.loanDetails?.amount);
+  const total = filteredLoans.length;
+  const active = filteredLoans.filter(l => ['DISBURSED', 'SANCTIONED', 'APPLIED', 'APPROVED'].includes(l.status)).length;
+  const closed = filteredLoans.filter(l => l.status === 'CLOSED').length;
+  const totalBorrowed = filteredLoans
+    .filter(l => ['DISBURSED', 'CLOSED'].includes(l.status))
+    .reduce((a, l) => a + (l.loanDetails?.amount || 0), 0);
 
   return (
     <Layout>
@@ -49,7 +52,7 @@ export default function BorrowerDashboard() {
 
       <div className="card">
         <div className="section-title">My Loan Applications</div>
-        {loading ? <p className="text-muted">Loading...</p> : loans.length === 0 ? (
+        {loading ? <p className="text-muted">Loading...</p> : filteredLoans.length === 0 ? (
           <div className="empty-state">
             <div className="icon">📄</div>
             <p>No loan applications yet.</p>
@@ -62,14 +65,14 @@ export default function BorrowerDashboard() {
                 <tr><th>Application</th><th>Amount</th><th>Tenure</th><th>Applied</th><th>Status</th><th>Outstanding</th></tr>
               </thead>
               <tbody>
-                {loans.map(l => (
+                {filteredLoans.map(l => (
                   <tr key={l._id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/loans/${l._id}`)}>
                     <td>#{l._id.slice(-6).toUpperCase()}</td>
                     <td>{l.loanDetails?.amount ? fmt(l.loanDetails.amount) : '—'}</td>
                     <td>{l.loanDetails?.tenure ? `${l.loanDetails.tenure} days` : '—'}</td>
                     <td>{fmtDate(l.createdAt)}</td>
                     <td><span className={STATUS_BADGE[l.status]}>{l.status}</span></td>
-                    <td>{l.outstandingBalance ? fmt(l.outstandingBalance) : '—'}</td>
+                    <td>{['DISBURSED', 'CLOSED'].includes(l.status) ? fmt(l.outstandingBalance) : '—'}</td>
                   </tr>
                 ))}
               </tbody>

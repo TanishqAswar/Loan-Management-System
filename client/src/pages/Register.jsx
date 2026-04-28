@@ -50,6 +50,7 @@ export default function Register() {
             <div className="form-group">
               <label className="form-label">Full Name</label>
               <input name="name" className="form-input" value={form.name} onChange={handle} required />
+              {form.role === 'borrower' && <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>Ensure your name matches your PAN Card exactly.</small>}
             </div>
             <div className="form-group">
               <label className="form-label">Email Address</label>
