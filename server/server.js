@@ -52,6 +52,7 @@ app.use((err, req, res, next) => {
 
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
