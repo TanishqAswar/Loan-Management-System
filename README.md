@@ -75,7 +75,7 @@ Start the Vite development server:
 npm run dev
 ```
 
-### 4. Database Seeding (Optional)
+### 4. Database Seeding
 
 To easily test all the roles without manually registering multiple accounts, you can run the seeding script from the `server` directory:
 

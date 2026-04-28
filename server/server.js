@@ -57,7 +57,7 @@ mongoose
   .then(() => {
     console.log('✅ MongoDB connected');
     const server = app.listen(PORT, () => {
-      console.log(`🚀 LMS Server running on http://localhost:${PORT}`);
+      console.log(`🚀 LMS Server running on ${BACKEND_URL}:${PORT}`);
     });
     // Fix for Vite proxy ECONNRESET and ECONNREFUSED race conditions
     server.keepAliveTimeout = 120000; 
