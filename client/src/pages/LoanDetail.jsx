@@ -106,7 +106,7 @@ export default function LoanDetail() {
         <div className="card mb-4" style={{ marginBottom: 20 }}>
           <div className="section-title">Supporting Document</div>
 
-          <a href={`${import.meta.env.VITE_BASE_URL}${loan.documentUrl}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
+          <a href={`${loan.documentUrl}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
             📎 View Document
           </a>
         </div>
@@ -150,7 +150,7 @@ export default function LoanDetail() {
         {user.role === 'disbursement_executive' && loan.status === 'SANCTIONED' && (
           <div>
             {loan.agreementUrl && (
-              <a href={`http://localhost:5000${loan.agreementUrl}`} className="btn btn-outline btn-sm mb-2" style={{ marginRight: 8 }}>
+              <a href={`${loan.agreementUrl}`} className="btn btn-outline btn-sm mb-2" style={{ marginRight: 8 }}>
                 📄 View Agreement
               </a>
             )}
