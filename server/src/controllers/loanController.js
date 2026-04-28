@@ -106,7 +106,8 @@ exports.uploadDocument = async (req, res) => {
     }
 
     // 🔥 IMPORTANT CHANGE
-    const baseUrl = process.env.BASE_URL || "http://localhost:5000";
+    const baseUrl = process.env.BASE_URL;
+    console.log("BASE_URL:", process.env.BASE_URL);
     const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
 
     loan.documentUrl = fileUrl;
