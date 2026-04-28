@@ -66,7 +66,7 @@ npm install
 Ensure you have a `.env` file in the `client` directory with the following variable:
 
 ```env
-VITE_API_URL=/api
+BACKEND_URL=https://loan-management-system-blfi.onrender.com/api
 ```
 
 Start the Vite development server:
