@@ -105,7 +105,8 @@ export default function LoanDetail() {
       {loan.documentUrl && ['borrower', 'sanction_officer', 'admin'].includes(user?.role) && (
         <div className="card mb-4" style={{ marginBottom: 20 }}>
           <div className="section-title">Supporting Document</div>
-          <a href={`http://localhost:5000${loan.documentUrl}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
+
+          <a href={`${import.meta.env.VITE_BASE_URL}${loan.documentUrl}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
             📎 View Document
           </a>
         </div>
