@@ -100,12 +100,24 @@ exports.uploadDocument = async (req, res) => {
   try {
     const loan = await Loan.findOne({ _id: req.params.id, borrower: req.user._id });
     if (!loan) return res.status(404).json({ success: false, message: 'Loan not found' });
-    if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
 
-    loan.documentUrl = `/uploads/${req.file.filename}`;
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    // 🔥 IMPORTANT CHANGE
+    const baseUrl = process.env.BASE_URL || "http://localhost:5000";
+    const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+
+    loan.documentUrl = fileUrl;
     await loan.save();
 
-    res.json({ success: true, message: 'Document uploaded', documentUrl: loan.documentUrl });
+    res.json({
+      success: true,
+      message: 'Document uploaded',
+      documentUrl: fileUrl
+    });
+
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
