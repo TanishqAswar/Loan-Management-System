@@ -32,8 +32,8 @@ export default function LoanList() {
   }, [user?.role]);
 
   const filtered = loans.filter(item => {
-    // Hide incomplete drafts from the UI
-    if (!item.loanDetails?.amount) return false;
+    // Hide incomplete drafts from the UI (only applies to actual loans, not leads)
+    if (user?.role !== 'sales_executive' && !item.loanDetails?.amount) return false;
 
     const q = search.toLowerCase();
     if (user?.role === 'sales_executive') {
