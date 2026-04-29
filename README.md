@@ -7,14 +7,14 @@ A full-stack Loan Management System built with the MERN stack (MongoDB, Express.
 - **Role-Based Access Control (RBAC)**: Supports `borrower`, `sales_executive`, `sanction_officer`, `disbursement_executive`, `collection_officer`, and `admin` roles.
 - **Borrower Portal**: Borrowers can apply for loans, upload documents (PDF/JPG/PNG), configure loan amounts/tenure, and view live EMI previews.
 - **Business Rule Engine (BRE)**: Automatically rejects applications based on configurable criteria (e.g., minimum salary, employment mode).
-- **Loan Lifecycle Management**: Loans go through stages: `APPLIED` -> `APPROVED` (by Sales) -> `SANCTIONED` (by Sanction Officer) -> `DISBURSED` (by Disbursement Exec).
+- **Loan Lifecycle Management**: Loans go through stages: `APPLIED` -> `APPROVED` & `SANCTIONED` (by Sanction Officer) -> `DISBURSED` (by Disbursement Exec).
 - **Payment Collection**: Collection officers can record UTR numbers and track the outstanding balance until the loan is `CLOSED`.
 - **Admin Dashboard**: Full visibility into all loans and system statistics with interactive charts and tables.
 
 ## Tech Stack
 
-- **Frontend**: React (Vite), React Router, Context API for state management, Vanilla CSS (Glassmorphism design), Axios, Lucide React (Icons), React Toastify.
-- **Backend**: Node.js, Express.js, Mongoose (MongoDB), JSON Web Tokens (JWT) for authentication, Multer for file uploads, Bcryptjs.
+- **Frontend**: React (Vite), React Router, Context API, Tailwind CSS combined with custom CSS for a premium Glassmorphism design, Axios, Lucide React, React Toastify.
+- **Backend**: Node.js, Express.js, TypeScript, Mongoose (MongoDB), JSON Web Tokens (JWT) for authentication, Multer for file uploads, Bcryptjs.
 
 ## Getting Started
 
@@ -46,12 +46,10 @@ JWT_SECRET=lms_super_secret_jwt_key_2024
 NODE_ENV=development
 ```
 
-Start the backend server:
+Start the backend server in development mode (using `tsx`):
 
 ```bash
 npm run dev
-# or
-npm start
 ```
 
 ### 3. Frontend Setup
@@ -96,8 +94,8 @@ This will create the following test accounts (Password for all is `password123`)
 
 1. **Register a Borrower**: Go to `/register` and create an account with the "Borrower" role.
 2. **Apply for a Loan**: Log in as the borrower and click "Apply for Loan". Complete the 3 steps.
-3. **Sales Review**: Register/Login as a "Sales Executive" to approve or reject the loan.
-4. **Sanction**: Login as a "Sanction Officer" to generate the agreement and sanction the loan.
+3. **Sales Review**: Register/Login as a "Sales Executive" to review leads (optional step, but approval is handled by Sanction Officer).
+4. **Approve & Sanction**: Login as a "Sanction Officer" to approve the application, generate the agreement, and sanction the loan.
 5. **Disburse**: Login as a "Disbursement Executive" to disburse the funds.
 6. **Repayment**: Login as a "Collection Officer" to record payments until the outstanding balance is zero.
 

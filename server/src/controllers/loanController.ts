@@ -1,7 +1,8 @@
-const Loan = require('../models/Loan');
+import Loan from '../models/Loan';
+import { Request, Response } from 'express';
 
 // BRE: Business Rule Engine
-const runBRE = (loan) => {
+const runBRE = (loan: any) => {
   const { monthlySalary, pan, employmentMode, dateOfBirth } = loan.personalDetails;
   const { amount, tenure } = loan.loanDetails;
 
@@ -44,7 +45,7 @@ const runBRE = (loan) => {
 };
 
 // Calculate interest
-const calculateLoanDetails = (amount, tenure, rate = 12) => {
+const calculateLoanDetails = (amount: number, tenure: number, rate = 12) => {
   const interest = (amount * rate * tenure) / (365 * 100);
   const totalRepayable = amount + interest;
   return {
@@ -57,7 +58,7 @@ const calculateLoanDetails = (amount, tenure, rate = 12) => {
 // @desc  Step 1: Submit personal details
 // @route POST /api/loans/step1
 // @access Borrower
-exports.submitPersonalDetails = async (req, res) => {
+export const submitPersonalDetails = async (req: any, res: Response) => {
   try {
     const { fullName, pan, dateOfBirth, monthlySalary, employmentMode } = req.body;
 
@@ -98,7 +99,7 @@ exports.submitPersonalDetails = async (req, res) => {
 // @desc  Step 2: Upload document
 // @route POST /api/loans/:id/upload
 // @access Borrower
-exports.uploadDocument = async (req, res) => {
+export const uploadDocument = async (req: any, res: Response) => {
   try {
     const loan = await Loan.findOne({ _id: req.params.id, borrower: req.user._id });
     if (!loan) return res.status(404).json({ success: false, message: 'Loan not found' });
@@ -130,7 +131,7 @@ exports.uploadDocument = async (req, res) => {
 // @desc  Step 3: Configure loan and run BRE
 // @route POST /api/loans/:id/configure
 // @access Borrower
-exports.configureLoan = async (req, res) => {
+export const configureLoan = async (req: any, res: Response) => {
   try {
     const { amount, tenure } = req.body;
     const loan = await Loan.findOne({ _id: req.params.id, borrower: req.user._id });
@@ -174,7 +175,7 @@ exports.configureLoan = async (req, res) => {
 // @desc  Get all loans (borrower: own loans; others: role-based)
 // @route GET /api/loans
 // @access Private
-exports.getLoans = async (req, res) => {
+export const getLoans = async (req: any, res: Response) => {
   try {
     let query = {};
     const { role, _id } = req.user;
@@ -209,7 +210,7 @@ exports.getLoans = async (req, res) => {
 // @desc  Get single loan
 // @route GET /api/loans/:id
 // @access Private
-exports.getLoan = async (req, res) => {
+export const getLoan = async (req: any, res: Response) => {
   try {
     const loan = await Loan.findById(req.params.id)
       .populate('borrower', 'name email')
@@ -233,7 +234,7 @@ exports.getLoan = async (req, res) => {
 // @desc  Sales: Approve or Reject loan
 // @route PATCH /api/loans/:id/review
 // @access Sales Executive
-exports.reviewLoan = async (req, res) => {
+export const reviewLoan = async (req: any, res: Response) => {
   try {
     const { action, rejectionReason } = req.body;
     const loan = await Loan.findById(req.params.id);
@@ -264,7 +265,7 @@ exports.reviewLoan = async (req, res) => {
 // @desc  Sanction: Send agreement & sanction loan
 // @route PATCH /api/loans/:id/sanction
 // @access Sanction Officer
-exports.sanctionLoan = async (req, res) => {
+export const sanctionLoan = async (req: any, res: Response) => {
   try {
     const loan = await Loan.findById(req.params.id);
     if (!loan) return res.status(404).json({ success: false, message: 'Loan not found' });
@@ -288,7 +289,7 @@ exports.sanctionLoan = async (req, res) => {
 // @desc  Disbursement: Disburse loan
 // @route PATCH /api/loans/:id/disburse
 // @access Disbursement Executive
-exports.disburseLoan = async (req, res) => {
+export const disburseLoan = async (req: any, res: Response) => {
   try {
     const loan = await Loan.findById(req.params.id);
     if (!loan) return res.status(404).json({ success: false, message: 'Loan not found' });
@@ -311,7 +312,7 @@ exports.disburseLoan = async (req, res) => {
 // @desc  Collection: Record payment
 // @route POST /api/loans/:id/payment
 // @access Collection Officer
-exports.recordPayment = async (req, res) => {
+export const recordPayment = async (req: any, res: Response) => {
   try {
     const { utrNumber, amount, date } = req.body;
     const loan = await Loan.findById(req.params.id);
@@ -348,7 +349,7 @@ exports.recordPayment = async (req, res) => {
 // @desc  Admin: Get all users
 // @route GET /api/loans/admin/stats
 // @access Admin
-exports.getAdminStats = async (req, res) => {
+export const getAdminStats = async (req: Request, res: Response) => {
   try {
     const stats = await Loan.aggregate([
       {

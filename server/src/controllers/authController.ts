@@ -1,13 +1,14 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+import User from '../models/User';
+import jwt from 'jsonwebtoken';
+import { Request, Response } from 'express';
 
-const signToken = (id) =>
+const signToken = (id: any) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
 // @desc   Register user
 // @route  POST /api/auth/register
 // @access Public
-exports.register = async (req, res) => {
+export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -34,7 +35,7 @@ exports.register = async (req, res) => {
 
 // @route  POST /api/auth/login
 // @access Public
-exports.login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -60,16 +61,16 @@ exports.login = async (req, res) => {
 
 // @route  GET /api/auth/me
 // @access Private
-exports.getMe = async (req, res) => {
+export const getMe = async (req: any, res: Response) => {
   res.json({ success: true, user: req.user });
 };
 
 // @desc   Get leads (users who haven't applied for a loan)
 // @route  GET /api/auth/leads
 // @access Sales Executive
-exports.getLeads = async (req, res) => {
+export const getLeads = async (req: Request, res: Response) => {
   try {
-    const Loan = require('../models/Loan');
+    const Loan = require('../models/Loan').default || require('../models/Loan');
     // All borrowers
     const borrowers = await User.find({ role: 'borrower' }).select('-password');
     // Loans that exist

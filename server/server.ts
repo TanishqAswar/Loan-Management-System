@@ -1,13 +1,14 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const path = require('path');
-const morgan = require('morgan');
-const expressListEndpoints = require("express-list-endpoints");
+import dotenv from 'dotenv';
+dotenv.config();
+import express, { Request, Response, NextFunction } from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import path from 'path';
+import morgan from 'morgan';
+import expressListEndpoints from "express-list-endpoints";
 
-const authRoutes = require('./src/routes/authRoutes');
-const loanRoutes = require('./src/routes/loanRoutes');
+import authRoutes from './src/routes/authRoutes';
+import loanRoutes from './src/routes/loanRoutes';
 
 const app = express();
 
@@ -29,7 +30,7 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     // Allow requests with no origin (Postman, curl)
     if (!origin) return callback(null, true);
 
@@ -53,12 +54,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/loans', loanRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: Request, res: Response) => {
   res.json({ success: true, message: 'LMS Server is running', timestamp: new Date() });
 });
 
 // Basic Route
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.json({
     message: 'Loan Management System API is running',
     status: 'OK',
@@ -68,12 +69,12 @@ app.get('/', (req, res) => {
 });
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({ success: false, message: 'Route not found' });
 });
 
 // Error handler
-app.use((err, req, res, next) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const status = err.status || err.statusCode || 500;
   console.error(`❌ [${req.method}] ${req.originalUrl} → ${status}`);
   console.error(`   Message : ${err.message}`);

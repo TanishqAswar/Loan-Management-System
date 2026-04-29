@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { protect, authorize } = require('../middleware/auth');
-const upload = require('../middleware/upload');
-const {
+import { protect, authorize } from '../middleware/auth';
+import upload from '../middleware/upload';
+import {
   submitPersonalDetails,
   uploadDocument,
   configureLoan,
@@ -13,7 +13,7 @@ const {
   disburseLoan,
   recordPayment,
   getAdminStats
-} = require('../controllers/loanController');
+} from '../controllers/loanController';
 
 // Borrower flow
 router.post('/step1', protect, authorize('borrower'), submitPersonalDetails);
@@ -31,4 +31,4 @@ router.patch('/:id/sanction', protect, authorize('sanction_officer', 'admin'), s
 router.patch('/:id/disburse', protect, authorize('disbursement_executive', 'admin'), disburseLoan);
 router.post('/:id/payment', protect, authorize('collection_officer', 'admin'), recordPayment);
 
-module.exports = router;
+export default router;

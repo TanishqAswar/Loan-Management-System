@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const paymentSchema = new mongoose.Schema({
   utrNumber: { type: String, required: true },
@@ -73,4 +73,4 @@ loanSchema.pre('save', function () {
   this.updatedAt = new Date();
 });
 
-module.exports = mongoose.model('Loan', loanSchema);
+export default mongoose.model('Loan', loanSchema);
